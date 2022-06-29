@@ -33,7 +33,7 @@ public class ProductRestControllerTest {
         product.setId(1L);
         product.setName("MyNewProduct");
         product.setPrice(2.5d);
-        mockMvc.perform(MockMvcRequestBuilders.put("/api/product")
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/product")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(product)))
                 .andDo(print())
@@ -45,7 +45,7 @@ public class ProductRestControllerTest {
 
     @Test
     public void testAddProduct_emptyName() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.put("/api/product")
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/product")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(new ProductDTO())))
                 .andDo(print())
@@ -59,7 +59,7 @@ public class ProductRestControllerTest {
         product.setId(1L);
         product.setName("ProductWithSameName");
         product.setPrice(2.5d);
-        mockMvc.perform(MockMvcRequestBuilders.put("/api/product")
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/product")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(product)))
                 .andDo(print())
@@ -69,7 +69,7 @@ public class ProductRestControllerTest {
                 .andExpect(jsonPath("$.price", is(2.5d)));
 
 
-        mockMvc.perform(MockMvcRequestBuilders.put("/api/product")
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/product")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(product)))
                 .andDo(print())
@@ -83,7 +83,7 @@ public class ProductRestControllerTest {
         product.setId(1L);
         product.setName("NewProduct");
         product.setPrice(2.5d);
-        ProductDTO insertedDto = new ObjectMapper().readValue(mockMvc.perform(MockMvcRequestBuilders.put("/api/product")
+        ProductDTO insertedDto = new ObjectMapper().readValue(mockMvc.perform(MockMvcRequestBuilders.post("/api/product")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(product)))
                 .andReturn()
@@ -110,7 +110,7 @@ public class ProductRestControllerTest {
         product.setId(1L);
         product.setName("P1");
         product.setPrice(2.5d);
-        mockMvc.perform(MockMvcRequestBuilders.put("/api/product")
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/product")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(product)))
                 .andDo(print())
@@ -123,7 +123,7 @@ public class ProductRestControllerTest {
         product2.setId(2L);
         product2.setName("P2");
         product2.setPrice(2.5d);
-        mockMvc.perform(MockMvcRequestBuilders.put("/api/product")
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/product")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(product2)))
                 .andDo(print())
@@ -147,7 +147,7 @@ public class ProductRestControllerTest {
         product.setId(1L);
         product.setName("UpdateMe");
         product.setPrice(2.5d);
-        ProductDTO insertedDto = new ObjectMapper().readValue(mockMvc.perform(MockMvcRequestBuilders.put("/api/product")
+        ProductDTO insertedDto = new ObjectMapper().readValue(mockMvc.perform(MockMvcRequestBuilders.post("/api/product")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(product)))
                 .andReturn()
@@ -174,7 +174,7 @@ public class ProductRestControllerTest {
         product.setId(1L);
         product.setName("UpdateMe");
         product.setPrice(2.5d);
-        ProductDTO insertedDto = new ObjectMapper().readValue(mockMvc.perform(MockMvcRequestBuilders.put("/api/product")
+        ProductDTO insertedDto = new ObjectMapper().readValue(mockMvc.perform(MockMvcRequestBuilders.post("/api/product")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(product)))
                 .andReturn()
@@ -198,7 +198,7 @@ public class ProductRestControllerTest {
         product.setId(1L);
         product.setName("Update1");
         product.setPrice(2.5d);
-        mockMvc.perform(MockMvcRequestBuilders.put("/api/product")
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/product")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(product)))
                 .andDo(print())
@@ -210,7 +210,7 @@ public class ProductRestControllerTest {
         product.setId(2L);
         product.setName("Update2");
         product.setPrice(2.5d);
-        mockMvc.perform(MockMvcRequestBuilders.put("/api/product")
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/product")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(product)))
                 .andDo(print())

@@ -14,7 +14,7 @@ public class ProductRestController {
     @Autowired
     private ProductService productService;
 
-    @PutMapping
+    @PostMapping
     public ProductDTO addProduct(@RequestBody ProductDTO product) {
         return productService.addProduct(product);
     }

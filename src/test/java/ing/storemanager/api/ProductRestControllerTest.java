@@ -73,4 +73,31 @@ public class ProductRestControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message", containsString("unique")));
     }
+
+    @Test
+    public void testGetProduct_success() throws Exception {
+        ProductDTO product = new ProductDTO();
+        product.setId(1L);
+        product.setName("NewProduct");
+        product.setPrice(2.5d);
+        ProductDTO insertedDto = new ObjectMapper().readValue(mockMvc.perform(MockMvcRequestBuilders.put("/api/product")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(product)))
+                .andReturn()
+                .getResponse()
+                .getContentAsString(), ProductDTO.class);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/product").param("id", insertedDto.getId().toString()))
+                .andDo(print())
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(jsonPath("$.id", equalTo(insertedDto.getId().intValue())));
+    }
+
+    @Test
+    public void testGetProduct_notFound() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/product").param("id", "15"))
+                .andDo(print())
+                .andExpect(status().is4xxClientError())
+                .andExpect(jsonPath("$.message", containsString("not found")));
+    }
 }

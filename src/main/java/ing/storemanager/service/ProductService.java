@@ -2,6 +2,7 @@ package ing.storemanager.service;
 
 import ing.storemanager.domain.Product;
 import ing.storemanager.error.BadRequestException;
+import ing.storemanager.error.EntityNotFoundException;
 import ing.storemanager.repository.ProductRepository;
 import ing.storemanager.service.dto.ProductDTO;
 import ing.storemanager.utils.mapper.ProductMapper;
@@ -32,8 +33,7 @@ public class ProductService {
     public ProductDTO getProduct(Long id) {
         final Optional<Product> optional = repository.findById(id);
         if (optional.isEmpty()) {
-            // TODO - throw not found ex
-            return null;
+            throw new EntityNotFoundException(ProductDTO.class, "id", id.toString());
         }
         return mapper.toDto(optional.get());
     }

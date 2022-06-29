@@ -1,4 +1,4 @@
-# store-manager
+# Store Manager
 Home assignment for ING.
 
 ---
@@ -15,3 +15,33 @@ Create an API that acts as a store management tool
 - Use Java 9+ features
 - Add a small Readme to document the project
 ---
+## How to run
+
+Download the project and go to the location where it was unpacked.
+
+Open a terminal/command line and type the following two commands:
+```
+mvn clean install
+mvn spring-boot:run
+```
+Tests can be run by entering the following command:
+```mvn test```
+---
+## API Documentation
+
+API Documentation for user registration can be found [here](https://documenter.getpostman.com/view/10048561/UzBvF32x)
+
+API Documentation for store operations can be found [here](https://documenter.getpostman.com/view/10048561/UzBvF37J)
+
+---
+## Implementation details
+
+Authorization is implemented with the help of Spring Security.
+
+Technology stack:
+- Java 11
+- Spring boot
+- Spring security
+- Maven
+- Lombok
+- Mapstruct

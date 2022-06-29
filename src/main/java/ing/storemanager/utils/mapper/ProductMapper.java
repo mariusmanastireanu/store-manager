@@ -1,4 +1,4 @@
-package ing.storemanager.utils;
+package ing.storemanager.utils.mapper;
 
 import ing.storemanager.domain.Product;
 import ing.storemanager.service.dto.ProductDTO;

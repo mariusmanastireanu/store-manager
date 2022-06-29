@@ -1,4 +1,4 @@
-package ing.storemanager.utils;
+package ing.storemanager.utils.mapper;
 
 import org.mapstruct.MapperConfig;
 import org.mapstruct.ReportingPolicy;

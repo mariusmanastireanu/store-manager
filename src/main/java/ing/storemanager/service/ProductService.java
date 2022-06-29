@@ -9,6 +9,9 @@ import ing.storemanager.utils.mapper.ProductMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -36,5 +39,11 @@ public class ProductService {
             throw new EntityNotFoundException(ProductDTO.class, "id", id.toString());
         }
         return mapper.toDto(optional.get());
+    }
+
+    public Collection<ProductDTO> getAllProducts() {
+        final List<ProductDTO> result = new ArrayList<>();
+        repository.findAll().forEach(product -> result.add(mapper.toDto(product)));
+        return result;
     }
 }

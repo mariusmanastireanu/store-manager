@@ -5,6 +5,8 @@ import ing.storemanager.service.dto.ProductDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collection;
+
 @RestController
 @RequestMapping("/api/product")
 public class ProductRestController {
@@ -20,6 +22,11 @@ public class ProductRestController {
     @GetMapping
     public ProductDTO getProduct(@RequestParam Long id) {
         return productService.getProduct(id);
+    }
+
+    @GetMapping(path = "/all")
+    public Collection<ProductDTO> getAll() {
+        return productService.getAllProducts();
     }
 
 }

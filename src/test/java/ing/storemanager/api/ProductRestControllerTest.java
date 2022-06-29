@@ -11,7 +11,10 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import java.util.Collection;
+
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -99,5 +102,42 @@ public class ProductRestControllerTest {
                 .andDo(print())
                 .andExpect(status().is4xxClientError())
                 .andExpect(jsonPath("$.message", containsString("not found")));
+    }
+
+    @Test
+    public void testGetAllProducts() throws Exception {
+        ProductDTO product = new ProductDTO();
+        product.setId(1L);
+        product.setName("P1");
+        product.setPrice(2.5d);
+        mockMvc.perform(MockMvcRequestBuilders.put("/api/product")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(product)))
+                .andDo(print())
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(jsonPath("$.id", is(not(nullValue()))))
+                .andExpect(jsonPath("$.name", containsString("P1")))
+                .andExpect(jsonPath("$.price", is(2.5d)));
+
+        ProductDTO product2 = new ProductDTO();
+        product2.setId(2L);
+        product2.setName("P2");
+        product2.setPrice(2.5d);
+        mockMvc.perform(MockMvcRequestBuilders.put("/api/product")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(product2)))
+                .andDo(print())
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(jsonPath("$.id", is(not(nullValue()))))
+                .andExpect(jsonPath("$.name", containsString("P2")))
+                .andExpect(jsonPath("$.price", is(2.5d)));
+
+        Collection<ProductDTO> result = new ObjectMapper().readValue(mockMvc.perform(MockMvcRequestBuilders.get("/api/product/all")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(product)))
+                .andReturn()
+                .getResponse()
+                .getContentAsString(), Collection.class);
+        assertEquals(2, result.size());
     }
 }

@@ -29,4 +29,9 @@ public class ProductRestController {
         return productService.getAllProducts();
     }
 
+    @PatchMapping
+    public ProductDTO updateProduct(@RequestBody ProductDTO product) {
+        return productService.updateProduct(product);
+    }
+
 }

@@ -140,4 +140,90 @@ public class ProductRestControllerTest {
                 .getContentAsString(), Collection.class);
         assertEquals(2, result.size());
     }
+
+    @Test
+    public void testUpdateProduct_success() throws Exception {
+        ProductDTO product = new ProductDTO();
+        product.setId(1L);
+        product.setName("UpdateMe");
+        product.setPrice(2.5d);
+        ProductDTO insertedDto = new ObjectMapper().readValue(mockMvc.perform(MockMvcRequestBuilders.put("/api/product")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(product)))
+                .andReturn()
+                .getResponse()
+                .getContentAsString(), ProductDTO.class);
+
+        product.setId(insertedDto.getId());
+        product.setName("NewName");
+        product.setPrice(3d);
+
+        mockMvc.perform(MockMvcRequestBuilders.patch("/api/product")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(product)))
+                .andDo(print())
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(jsonPath("$.id", is(not(nullValue()))))
+                .andExpect(jsonPath("$.name", containsString("NewName")))
+                .andExpect(jsonPath("$.price", is(3d)));
+    }
+
+    @Test
+    public void testUpdateProduct_ProductNotFound() throws Exception {
+        ProductDTO product = new ProductDTO();
+        product.setId(1L);
+        product.setName("UpdateMe");
+        product.setPrice(2.5d);
+        ProductDTO insertedDto = new ObjectMapper().readValue(mockMvc.perform(MockMvcRequestBuilders.put("/api/product")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(product)))
+                .andReturn()
+                .getResponse()
+                .getContentAsString(), ProductDTO.class);
+
+        product.setId(5555L);
+        product.setName("NewName");
+        product.setPrice(3d);
+
+        mockMvc.perform(MockMvcRequestBuilders.patch("/api/product")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(product)))
+                .andDo(print())
+                .andExpect(status().is4xxClientError());
+    }
+
+    @Test
+    public void testUpdateProduct_DuplicateNames() throws Exception {
+        ProductDTO product = new ProductDTO();
+        product.setId(1L);
+        product.setName("Update1");
+        product.setPrice(2.5d);
+        mockMvc.perform(MockMvcRequestBuilders.put("/api/product")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(product)))
+                .andDo(print())
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(jsonPath("$.id", is(1)))
+                .andExpect(jsonPath("$.name", containsString("Update1")))
+                .andExpect(jsonPath("$.price", is(2.5d)));
+
+        product.setId(2L);
+        product.setName("Update2");
+        product.setPrice(2.5d);
+        mockMvc.perform(MockMvcRequestBuilders.put("/api/product")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(product)))
+                .andDo(print())
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(jsonPath("$.id", is(2)))
+                .andExpect(jsonPath("$.name", containsString("Update2")))
+                .andExpect(jsonPath("$.price", is(2.5d)));
+
+        product.setName("Update1");
+        mockMvc.perform(MockMvcRequestBuilders.patch("/api/product")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(product)))
+                .andDo(print())
+                .andExpect(status().is4xxClientError());
+    }
 }

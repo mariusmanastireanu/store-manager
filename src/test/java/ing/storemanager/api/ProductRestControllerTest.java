@@ -30,7 +30,6 @@ public class ProductRestControllerTest {
     @Test
     public void testAddProduct_success() throws Exception {
         ProductDTO product = new ProductDTO();
-        product.setId(1L);
         product.setName("MyNewProduct");
         product.setPrice(2.5d);
         mockMvc.perform(MockMvcRequestBuilders.post("/api/product")
@@ -56,7 +55,6 @@ public class ProductRestControllerTest {
     @Test
     public void testAddProduct_sameName() throws Exception {
         ProductDTO product = new ProductDTO();
-        product.setId(1L);
         product.setName("ProductWithSameName");
         product.setPrice(2.5d);
         mockMvc.perform(MockMvcRequestBuilders.post("/api/product")
@@ -80,7 +78,6 @@ public class ProductRestControllerTest {
     @Test
     public void testGetProduct_success() throws Exception {
         ProductDTO product = new ProductDTO();
-        product.setId(1L);
         product.setName("NewProduct");
         product.setPrice(2.5d);
         ProductDTO insertedDto = new ObjectMapper().readValue(mockMvc.perform(MockMvcRequestBuilders.post("/api/product")
@@ -98,7 +95,7 @@ public class ProductRestControllerTest {
 
     @Test
     public void testGetProduct_notFound() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/product").param("id", "15"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/product").param("id", "583840"))
                 .andDo(print())
                 .andExpect(status().is4xxClientError())
                 .andExpect(jsonPath("$.message", containsString("not found")));
@@ -106,8 +103,13 @@ public class ProductRestControllerTest {
 
     @Test
     public void testGetAllProducts() throws Exception {
+        Collection<ProductDTO> result = new ObjectMapper().readValue(mockMvc.perform(MockMvcRequestBuilders.get("/api/product/all"))
+                .andReturn()
+                .getResponse()
+                .getContentAsString(), Collection.class);
+        int currentSize = result.size();
+
         ProductDTO product = new ProductDTO();
-        product.setId(1L);
         product.setName("P1");
         product.setPrice(2.5d);
         mockMvc.perform(MockMvcRequestBuilders.post("/api/product")
@@ -120,7 +122,6 @@ public class ProductRestControllerTest {
                 .andExpect(jsonPath("$.price", is(2.5d)));
 
         ProductDTO product2 = new ProductDTO();
-        product2.setId(2L);
         product2.setName("P2");
         product2.setPrice(2.5d);
         mockMvc.perform(MockMvcRequestBuilders.post("/api/product")
@@ -132,19 +133,18 @@ public class ProductRestControllerTest {
                 .andExpect(jsonPath("$.name", containsString("P2")))
                 .andExpect(jsonPath("$.price", is(2.5d)));
 
-        Collection<ProductDTO> result = new ObjectMapper().readValue(mockMvc.perform(MockMvcRequestBuilders.get("/api/product/all")
+        result = new ObjectMapper().readValue(mockMvc.perform(MockMvcRequestBuilders.get("/api/product/all")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(product)))
                 .andReturn()
                 .getResponse()
                 .getContentAsString(), Collection.class);
-        assertEquals(2, result.size());
+        assertEquals(currentSize + 2, result.size());
     }
 
     @Test
     public void testUpdateProduct_success() throws Exception {
         ProductDTO product = new ProductDTO();
-        product.setId(1L);
         product.setName("UpdateMe");
         product.setPrice(2.5d);
         ProductDTO insertedDto = new ObjectMapper().readValue(mockMvc.perform(MockMvcRequestBuilders.post("/api/product")
@@ -171,7 +171,6 @@ public class ProductRestControllerTest {
     @Test
     public void testUpdateProduct_ProductNotFound() throws Exception {
         ProductDTO product = new ProductDTO();
-        product.setId(1L);
         product.setName("UpdateMe");
         product.setPrice(2.5d);
         ProductDTO insertedDto = new ObjectMapper().readValue(mockMvc.perform(MockMvcRequestBuilders.post("/api/product")
@@ -181,7 +180,7 @@ public class ProductRestControllerTest {
                 .getResponse()
                 .getContentAsString(), ProductDTO.class);
 
-        product.setId(5555L);
+        product.setId(99999L);
         product.setName("NewName");
         product.setPrice(3d);
 
@@ -195,7 +194,6 @@ public class ProductRestControllerTest {
     @Test
     public void testUpdateProduct_DuplicateNames() throws Exception {
         ProductDTO product = new ProductDTO();
-        product.setId(1L);
         product.setName("Update1");
         product.setPrice(2.5d);
         mockMvc.perform(MockMvcRequestBuilders.post("/api/product")
@@ -203,22 +201,19 @@ public class ProductRestControllerTest {
                         .content(new ObjectMapper().writeValueAsString(product)))
                 .andDo(print())
                 .andExpect(status().is2xxSuccessful())
-                .andExpect(jsonPath("$.id", is(1)))
                 .andExpect(jsonPath("$.name", containsString("Update1")))
                 .andExpect(jsonPath("$.price", is(2.5d)));
 
-        product.setId(2L);
         product.setName("Update2");
         product.setPrice(2.5d);
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/product")
+        ProductDTO insertedDto = new ObjectMapper().readValue(mockMvc.perform(MockMvcRequestBuilders.post("/api/product")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(product)))
-                .andDo(print())
-                .andExpect(status().is2xxSuccessful())
-                .andExpect(jsonPath("$.id", is(2)))
-                .andExpect(jsonPath("$.name", containsString("Update2")))
-                .andExpect(jsonPath("$.price", is(2.5d)));
+                .andReturn()
+                .getResponse()
+                .getContentAsString(), ProductDTO.class);
 
+        product.setId(insertedDto.getId());
         product.setName("Update1");
         mockMvc.perform(MockMvcRequestBuilders.patch("/api/product")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -226,4 +221,50 @@ public class ProductRestControllerTest {
                 .andDo(print())
                 .andExpect(status().is4xxClientError());
     }
+
+    @Test
+    public void removeProduct_success() throws Exception {
+        Collection<ProductDTO> result = new ObjectMapper().readValue(mockMvc.perform(MockMvcRequestBuilders.get("/api/product/all"))
+                .andReturn()
+                .getResponse()
+                .getContentAsString(), Collection.class);
+        int currentSize = result.size();
+
+        ProductDTO product = new ProductDTO();
+        product.setName("Update1");
+        product.setPrice(2.5d);
+
+        ProductDTO insertedDto = new ObjectMapper().readValue(mockMvc.perform(MockMvcRequestBuilders.post("/api/product")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(product)))
+                .andDo(print())
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(jsonPath("$.name", containsString("Update1")))
+                .andExpect(jsonPath("$.price", is(2.5d)))
+                .andReturn().getResponse()
+                .getContentAsString(), ProductDTO.class);
+
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/product")
+                        .param("id", insertedDto.getId().toString()))
+                .andDo(print())
+                .andExpect(status().is2xxSuccessful());
+
+        result = new ObjectMapper().readValue(mockMvc.perform(MockMvcRequestBuilders.get("/api/product/all")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(product)))
+                .andReturn()
+                .getResponse()
+                .getContentAsString(), Collection.class);
+        assertEquals(currentSize, result.size());
+    }
+
+    @Test
+    public void removeProduct_notFound() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/product")
+                        .param("id", "999412"))
+                .andDo(print())
+                .andExpect(status().is4xxClientError());
+    }
+
+
 }

@@ -34,4 +34,9 @@ public class ProductRestController {
         return productService.updateProduct(product);
     }
 
+    @DeleteMapping
+    public void removeProduct(@RequestParam Long id) {
+        productService.removeProduct(id);
+    }
+
 }

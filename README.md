@@ -1,6 +1,4 @@
 # Store Manager
-Home assignment for ING.
-
 ---
 Requirements:
 Create an API that acts as a store management tool
